@@ -81,27 +81,6 @@ def preprocessing_nace(df):
 
     return result_df
 
-def mean_nace(X_train, y_train, X_test):
-    combined_x_y = pd.concat([X_train, y_train], axis=1)
-    combined_x_y = combined_x_y[['nace_two', 'is_defaulted']]
-    nace_rate = {}
-    print(combined_x_y.head())
-    for nace, number in enumerate(combined_x_y["nace_two"].value_counts()):
-        print(nace, number)
-        if number>=10:
-            print('ici', combined_x_y["nace_two"==nace]['is_defaulted'].mean())
-            nace_rate[nace] = combined_x_y["nace_two"==nace]['is_defaulted'].mean()
-        else:
-            # if not enough values, we take the average
-            nace_rate["unknown"] = combined_x_y['is_defaulted'].mean()
-
-    X_train['nace_rate']   = X_train.apply(lambda row : nace_rate[row['nace_two']] if row['nace_two'] in nace_rate.index else nace_rate['unknown'])
-    X_test['nace_rate']   = X_test.apply(lambda row : nace_rate[row['nace_two']] if row['nace_two'] in nace_rate.index else nace_rate['unknown'])
-
-
-    return X_train, X_test
-
-
 def preprocessing_forme_juridique(dataset):
 
     dataset['formeJuridique_1'] = dataset['formeJuridique_1'].fillna("other")
@@ -357,11 +336,6 @@ def preprocess(dataset):
     print(datetime.now(), "preprocess nace")
     X_train = preprocessing_nace(X_train)
     X_test = preprocessing_nace(X_test)
-
-    print(datetime.now(), "nace average")
-    X_train, X_test = mean_nace(X_train, y_train, X_test)
-
-
 
     #postal code to lat/lon
     print(datetime.now(), "preprocess postal code")
